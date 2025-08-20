@@ -50,7 +50,7 @@ This week, we examine a data set of **NYC flight data** from the `nycflights13` 
 
 ```{r}
 # Read in the data from the nycflights_sample csv file into the variable flights_sample
-flights_sample <- read.csv('/Users/kierin/MATH1062/Week3/nycflights_sample.csv')
+flights_sample <- read.csv('nycflights_sample.csv')
 ```
 
 #### View a "summary" of the data with the `str()` function
