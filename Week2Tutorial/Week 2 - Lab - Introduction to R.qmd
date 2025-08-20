@@ -1,0 +1,395 @@
+---
+title: "MATH1062 Statistics"
+subtitle: "Lab Week 2 - Introduction to R and Graphical Summaries"
+format:
+  html:
+    embed-resources: true
+date: today
+author: Kierin Chung with scaffold and instructions from Yeeka Yau. 
+---
+
+# Welcome! 😊
+
+Each week your MATH1062 statistics workshops will involve conceptual/theoretical questions as well as R coding questions. When you come to workshops you should expect the following:
+
+-   Engage with your peers and tutor! Many questions will require you to discuss ideas in groups and write on the whiteboards in conjunction with coding in R.
+
+As a first introductory lab, we will explore how data visualisations can help form answers to initial research questions. We will also practice our *statistical intuition* and *data sense* by examining various data visualisations and think about how they relate to basic numerical summaries.
+
+### Learning Outcomes covered in this lab
+
+-   **LO3**. identify appropriate methods to describe, summarise and visualise a given data set
+-   **LO5**. apply statistical software such as R to analyse example sets of data
+
+### Specific lab outcomes:
+
+-   Meet new friends and have fun.
+-   Learn the basics of an R Quarto document.
+-   Be able to read in a csv file of data into an R dataframe.
+-   Experience some basics of data wrangling in R.
+-   Be able to use R to calculate basic numerical summaries and make basic data visualisations.
+
+## Group Discussion Questions
+
+1.  Introduce yourself to your group at your table. Have each member of the group say the following three things about themselves, and write these on the board: **Name, where you are from, something you enjoy doing.**
+
+2.  Recall that the **five number summary** are the following numbers
+
+    $$
+    (minimum, Q1, median, Q3, maximum)
+    $$
+
+    Another statistic to measure "spread" of data is the **interquartile range (IQR),** which is defined to be $Q3-Q1$. How "robust" or "resistant" is IQR to outliers in quantitative data? Discuss this in your group, construct an example to support any claims.
+
+It is robust as it is the spread of the middle 50% of the data. Therefore, it is highly robust and is similar to median whereby it is not easily affected by outliers.
+
+### Set up and reading data into R
+
+The first thing we usually do is import helpful packages of code called "libraries" to make our visualisations look nicer and to help with data wrangling. The libraries **ggplot2** and **dplyr** are very commonly used and included in the **tidyverse** package.
+
+```{r}
+# This package includes the packages ggplot and dplyr for data visualisation and manipulation
+library(tidyverse)
+```
+
+### The data set
+
+This week, we examine a data set from an in-class survey of students in introductory statistics courses at a US university. This data comes from [Datasets from the textbook: Statistics: Unlocking the power of data](https://www.lock5stat.com/datapage3e.html). We've chosen this data set for this lab as it contains a variety of variables for various visualisations and is easy to understand.
+
+```{r}
+# This code reads data from a csv file into an R data frame called "student_data"
+student_data <- read.csv("/Users/kierin/MATH1062/Week2/StudentSurvey.csv")
+```
+
+#### View a "summary" of the data
+
+```{r}
+# This code displays a "summary" of the data
+str(student_data)
+```
+
+::: {.callout-note title="Data Dictionary" collapse="true"}
+#### Data Dictionary
+
+The data dictionary typically gives a more detailed description of each variable in the data set.
+
+-   **Year** Year in school
+
+-   **Sex** code F=female or M=male
+
+-   **Smoke** Smoker? No or Yes
+
+-   **Award** Preferred award student would like to win: Academy, Nobel, or Olympic
+
+-   **HigherSAT** Which SAT is higher? Math or Verbal
+
+-   **Exercise** Hours of exercise per week
+
+-   **TV** Hours of TV viewing per week
+
+-   **Height** Height (in inches)
+
+-   **Weight** Weight (in pounds)
+
+-   **Siblings** Number of siblings
+
+-   **BirthOrder** Birth order, 1=oldest
+
+-   **VerbalSAT** Verbal SAT score
+
+-   **MathSAT** Math SAT scorer
+
+-   **SAT** Combined Verbal + Math SAT (The SAT is a standardised exam widely used for admission into universities in the US, it consists of a verbal and mathematics component).
+
+-   **GPA** University grade point average
+
+-   **Pulse** Pulse rate (beats per minute)
+
+-   **Piercings** Number of body piercings
+
+Details
+
+Data from an in-class survey given to introductory statistics students at a US university over several years. Note the Sex variable was labeled as Gender in earlier versions of this dataset. We acknowledge that this binary dichotomization is not a complete or inclusive representation of reality.
+:::
+
+### Frequency Tables and Barplots 📊
+
+1.  The **Award** variable is the award that a student would prefer to win if given a choice between an Academy award (for actors in movies), a Nobel Prize (prestigious international award for various fields) or an Olympic medal. Construct a frequency table and relative frequency table to answer the question: *Which award would students most like to win*? The relevant R functions here are
+
+    ``` r
+    table(the_data$the_variable)
+    prop.table(the_data$the_variable)
+    ```
+
+    Note. Replace `the_data` with the name of the dataframe and `the_variable` with the variable name as needed in your code.
+
+```{r}
+table(student_data$Award)
+```
+
+```{r}
+round(prop.table(table(student_data$Award)),2)
+```
+
+2.  Suppose we want to analyse this against the **HigherSAT** variable. We want to know, *is there a difference between which award students want to win depending on whether they scored higher on the verbal or mathematics sections of the SAT*? First use `table(the_data$the_variable)` to examine the counts for each factor in **HigherSAT**.
+
+```{r}
+table(student_data$HigherSAT)
+```
+
+Are there any issues with the data? We see that there are 7 observations (students) that have neither *Math* or *Verbal* in the **HigherSAT** variable. Did these 7 students achieve the same score on *Math* and *Verbal*? Or has the data been lost/corrupted/some other issue? This demonstrates the need for **data cleaning** and **data wrangling** in IDA. Since it is not clear from the data dictionary, we will make a new data frame called `sat_award` with just the **HigherSAT** and **Award** variables and drop these 7 observations to explore this question. Run the code below to do this - read the comments to understand what the code is doing. (What course of action you take in situations like this will depend heavily on the context of the situation and data)
+
+```{r}
+# Select only the relevant variables, drop the "bad" rows and save it into a new data frame called sat_award. The select() and filter() functions come from the dplyr library within tidyverse
+student_data %>%
+  select(HigherSAT, Award) %>% #select the relevant columns
+  filter(HigherSAT != "") -> #filter out rows where the HigherSAT variable is NOT an empty string and then save this data frame into a variable called sat_award
+  sat_award 
+```
+
+```{r}
+# Use ggplot to make a double-bar plot
+ggplot(sat_award, aes(x=HigherSAT, fill=Award)) + 
+  geom_bar(position = "dodge") +
+  labs(title="Preferred Award by Higher SAT section") +
+  theme_minimal()
+```
+
+#### **Write your insights from the double barplot here:**
+Math has a preference for Olympic award whereas Verbal has a less obvious favoured award with Nobel edging out Olympic but not by much. Academy has an affinity towards Math but this is slight as well. 
+
+### Histograms
+
+Let us now examine some quantitative variables with histograms.
+
+2.  Plot separate histograms (frequency on the $y$-axis) for the variables **GPA** (Grade point average), **Pulse** and **Piercings**. Use the code `hist(the_data$the_variable)` (3 times, one for each variable) to use the base R histogram function. Discuss the shape of each of these distributions in your **groups**.
+
+```{r}
+# The line below separates the "canvas" into 2 rows and 2 columns to display the 3 graphs
+par(mfrow = c(1, 3))
+
+# Your code for the three histograms here
+hist(student_data$GPA, main = "GPA", xlab = "GPA")
+hist(student_data$Pulse, main = "Pulse", xlab = "Pulse")
+hist(student_data$Piercings, main = "Piercings", xlab = "Number of Piercings")
+```
+
+#### **Group comments on the shapes of the histograms:**
+Piercings are concentrated at 0 and somewhat 1 with increased piercings less and less common, positively skewed. 
+GPA is centralised around 3.25 with spread decreasing around it and with 2.75 relatively high, relatively normal distribution. 
+Pulse is centralised around 70 and decreases around it approximately a normal distribution. 
+
+3.  For each histogram (simply by looking), estimate their **five number summaries** and the **mean**, then have each group member write their estimates on the board. After this, use the following command in the **Console** to see who got the closest. (The idea behind this exercise is to practice your *statistical intuition*)
+
+GPA: [2.0, 2.75, 3.25, 3.5, 4.0]
+Pulse: [40, 60, 70, 80, 120]
+Piercings: [0, 0, 1, 2, 10]
+
+```{r}
+print(summary(student_data$GPA))
+```
+```{r}
+print(summary(student_data$Pulse))
+```
+```{r}
+print(summary(student_data$Piercings))
+```
+
+#### **Can you make any general rules about the distribution of data, and the relationship between the mean and the median depending on the shape of the histogram? Discuss this in your group and write the ideas down here.**
+Median will generally be at the center of the histogram or close to it at the least. 
+For GPA and Pulse, we see that mean and median are approximately the same as they refelct a relatively normal distribution.
+The same cannot be said for piercings as it is positively skewed. 
+
+4.  **Frequency scale vs. Density scale with quantile breaks -** One common method to determine class intervals is to separate the data by percentiles. Here we separate the data at the 20th, 40th, 60th, 80th and 100th percentiles (with left closed-right open convention). The code in this section is a little involved, so again just read the comments and run the code, examine the output and get a general idea of what each part is doing.
+
+**Create a new dataframe for the MathSAT scores and the bin it falls in.**
+
+```{r}
+# Clean and extract the MathSAT scores
+x <- na.omit(student_data$MathSAT)
+
+# Get quantile-based bin breaks (quintiles)
+breaks <- quantile(x, probs = seq(0, 1, 0.2), na.rm = TRUE)
+
+# We create a new dataframe called hist_data with only the MathSAT scores and the bin that it falls into
+hist_data <- data.frame(MathSAT = x) %>%
+  mutate(bin = cut(MathSAT, breaks = breaks, include.lowest = TRUE))
+
+# Display the hist_data dataframe
+hist_data
+```
+
+**Create dataframe of frequencies, relative frequencies and densities for plotting**
+
+```{r}
+# Here we make the data frame that we will use to make the histograms
+freq_table <- hist_data %>%
+  count(bin) %>%            # count how many fall into the bin
+  mutate(
+    xmin = head(breaks, -1), # Determine the left edge of the bin 
+    xmax = tail(breaks, -1), # Determine the right edge of the bin
+    width = xmax - xmin,     # Calculate the bin width
+    rel_freq = n / sum(n),   # Relative frequency (proportion)
+    density = rel_freq / width # Density
+  )
+
+freq_table
+```
+
+**Make Frequency and Density histograms using ggplot**
+
+```{r}
+# Make plots using ggplot library
+
+# Plot 1: Frequency histogram
+p_freq <- ggplot(freq_table) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = 0, ymax = n), # Plot each rectangle, by passing in the x and y coordinates
+            fill = "skyblue", color = "black") +
+  scale_x_continuous(
+  breaks = as.numeric(breaks),
+  labels = paste0(names(breaks), "\n", as.numeric(breaks))
+) +
+  labs(
+    title = "Frequency Histogram (Quantile Bins)",
+    x = "MathSAT",
+    y = "Frequency"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Plot 2: Density histogram
+p_density <- ggplot(freq_table) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = 0, ymax = density), # Note here we use density for the top y-value
+            fill = "tomato", color = "black") +
+  scale_x_continuous(
+  breaks = as.numeric(breaks),
+  labels = paste0(names(breaks), "\n", as.numeric(breaks))
+) +
+  labs(
+    title = "Density Histogram (Quantile Bins)",
+    x = "MathSAT",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+**Frequency Histogram**
+
+```{r}
+# Display the frequency histogram
+p_freq
+```
+
+**Density Histogram**
+
+```{r}
+# Display the density histogram
+p_density
+```
+
+#### **Discuss the differences in the plots in your groups and note down the comments. Which one do you think gives a better sense of how MathSAT scores are distributed? Where is the largest concentration of MathSAT scores?**
+
+### Scatterplots
+
+5.  Choose any two quantitative variables and hypothesize a relationship between them. Each **group** member should come up with different hypotheses. For each hypothesis, use a scatterplot to visualise their relationship. **Do a rough sketch on the board for each one**. The code example to make a scatterplot is the following
+
+Relationship b/w Weight and Exercise: None. 
+
+``` r
+plot(the_data$a_variable, the_data$another_variable)
+```
+
+```{r}
+plot(student_data$Weight, student_data$Exercise)
+```
+
+## Smoking Study and Simpson's Paradox (most likely complete this after the lab)
+
+Here we have a go at analysing another data set `simpsons_smoking.csv` and see a real life example of something called **Simpson's paradox** (attributed to [Edward Simpson](https://en.wikipedia.org/wiki/Edward_H._Simpson), not Homer Simpson).
+
+**Do a quick Google search or ask AI to explain what Simpson's paradox is, then complete the remainder of the tutorial.**
+
+![Simpson on the left, not the right](images/clipboard-3636759916.png){width="449"}
+
+This data was collected to analyse the effect of smoking on mortality rates in women. The initial data collected from an electoral roll near Newcastle in the United Kingdom. The follow-up data was collected 20 years later.
+
+The study concentrated on 1,314 women who were either smokers or non-smokers (there are 162 who had stopped smoking and 18 did not record their status in the full data).
+
+```{r}
+# Read in the data set
+smoking = read.csv("/Users/kierin/MATH1062/Week2/simpsons_smoking.csv", header=T)
+```
+
+Use the `str()` function to get a sense of the dimension of the data and the variables contained in the data set.
+
+```{r}
+str(smoking)
+```
+
+```{r}
+# It's only a small dataset, so display the whole thing.
+smoking
+```
+
+-   Calculate the overall mortality rate (number died in group / total in group) for smokers and non-smokers by using `sum()` to sum over a variable/column and `/` to divide numbers.
+
+    ```{r}
+    # Mortality rate for smokers
+    mortality_rate_smokers = sum(smoking$SmokersDied)/(sum(smoking$SmokersSurvived) + sum(smoking$SmokersDied))
+    mortality_rate_smokers
+    ```
+
+    ```{r}
+    # Mortality rate for non-smokers
+    mortality_rate_nonsmokers = sum(smoking$NonSmokersDied)/(sum(smoking$NonSmokersSurvived) + sum(smoking$NonSmokersDied))
+    mortality_rate_nonsmokers
+    ```
+
+#### **Write your conclusions from the calculations here:**
+There is a slight but not huge difference between the mortality rate for smokers and non-smokers. 
+
+-   Now let us do the same, but looking by age group. Let's look at the mortality rates for 18-24 age groups, 45-54 age groups and 65-74 age groups. Note that the data is already summarised in these groups in a table format. To calculate the mortality rates for each group, we just need to divide the appropriate numbers in the row for each group.
+
+**18-24 age group**
+
+```{r}
+# Run this code, the [1] denotes the first row of data in the data frame.
+mortality_rate_smokers_18_24 = sum(smoking$SmokersDied[1])/(sum(smoking$SmokersSurvived[1]) + sum(smoking$SmokersDied[1]))
+mortality_rate_smokers_18_24
+```
+
+```{r}
+# Run this code
+mortality_rate_nonsmokers_18_24 = sum(smoking$NonSmokersDied[1])/(sum(smoking$NonSmokersSurvived[1]) + sum(smoking$NonSmokersDied[1]))
+mortality_rate_nonsmokers_18_24
+```
+
+**45-54 age group**
+
+```{r}
+mortality_rate_smokers_45_54 = sum(smoking$SmokersDied[4])/(sum(smoking$SmokersSurvived[4]) + sum(smoking$SmokersDied[4]))
+mortality_rate_smokers_45_54
+```
+
+```{r}
+mortality_rate_nonsmokers_45_54 = sum(smoking$NonSmokersDied[4])/(sum(smoking$NonSmokersDied[4]) + sum(smoking$NonSmokersDied[4]))
+mortality_rate_nonsmokers_45_54
+```
+
+**65-74 age group**
+
+```{r}
+mortality_rate_smokers_65_74 = sum(smoking$SmokersDied[6])/(sum(smoking$SmokersSurvived[6]) + sum(smoking$SmokersDied[6]))
+mortality_rate_smokers_65_74
+```
+
+```{r}
+mortality_rate_nonsmokers_65_74 = sum(smoking$NonSmokersDied[6])/(sum(smoking$NonSmokersSurvived[6]) + sum(smoking$NonSmokersDied[6]))
+mortality_rate_nonsmokers_65_74
+```
+
+#### **Write down your observations of mortality rates when examined in age groups, why do you think you see this particular pattern?**
+When examined in age groups, we see different data then as wel look at the data as a whole. We see this because of death from natural causes and also the effect that smoking has on the body being compounded throughout age. Therefore, we can largely expected varied data between ages.  
+#### **Explain why this is an example of Simpson's paradox.**
+This is an example of Simpson's Paradox as his paradox states that if a trend appears in different groups of data but disappears or reverses when these groups are combined, it conforms to the paradox he describes. This is undoutebly true in this case. 
+#### **Write down how this can inform your decision making process when analysing data.**
+We should consider other issues and the existence of paradoxes within analysis of data which should dictate the methods which we use to analyse data. Whereas certain things appear and/or dissapear given the groups we observe, we should be cautions in defining these groups and how we utiliese these groups or the lack thereof in our analysis of such data to ensure accuracy in the conclusions we purport. 

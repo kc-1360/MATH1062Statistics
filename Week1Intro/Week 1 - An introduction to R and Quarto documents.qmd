@@ -1,0 +1,634 @@
+---
+title: "MATH1062 Statistics: Week 1 - Getting Started with R"
+author: "School of Mathematics and Statistics, University of Sydney"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    #code-fold: true
+---
+
+# Welcome! 🤗 ✌🏼
+
+This is an introduction to **R**, **RStudio** and **Quarto** documents for MATH1062.
+
+In this guide, we will introduce you to the **very basics of R programming** to get you started in your coding journey in MATH1062! This document assumes you have none to very little programming experience. Feel free to go over this quickly if you're already familiar with R, and equally, feel free to seek help from the lecturer or tutors if you need help with any of these exercises and examples.
+
+More specifically, this Quarto document will cover:
+
+-   How to run R code
+-   How to "render" a Quarto document to produce an HTML file (you'll need to do this for the assignments).
+-   What variables are and the main types of data in R
+-   How to read in a CSV file (including common mistakes and how to fix them)
+-   How to select columns and rows in a data frame
+-   How to make basic plots
+-   Doing all of the above in **base R** first, then with the **tidyverse** library/package.
+
+## Getting to know RStudio
+
+When you open RStudio, you’ll usually see **four main panes (windows)**:
+
+1.  **Source / Editor (top-left)**
+    -   Where you write your R scripts or Quarto documents.
+    -   You can have multiple tabs open for different files.
+2.  **Console (bottom-left)**
+    -   This is where R actually runs commands.
+    -   You can type code directly here to try something out, or send code from the Source pane to run.
+    -   When you run a Quarto document, this is where the code executes.
+3.  **Environment / History (top-right)**
+    -   **Environment tab**: Shows all the variables, data frames, and functions you’ve created in your current R session.
+    -   **History tab**: A record of all the commands you’ve run.
+4.  **Files / Plots / Help / Packages (bottom-right)**
+    -   **Files**: Browse files and folders on your computer.
+    -   **Help**: View documentation for functions and packages.
+    -   **Packages**: See which R packages are installed and to install new packages.
+
+💡 **Tip:** If your RStudio layout looks different, you can reset it via\
+**Tools → Global Options → Pane Layout**.
+
+------------------------------------------------------------------------
+
+# Running R code
+
+Before we start running R code, let's learn how to **add code chunks** to a Quarto document.
+
+In RStudio, you can insert a new R code chunk in several ways:
+
+-   **Mac**: Press `Command` + `Option` + `I`
+-   **Windows**: Press `Ctrl` + `Alt` + `I`
+-   Or click the **Code** at the top of the RStudio window and choose **Insert Chunk**.
+
+A new chunk will look like this:
+
+```{r}
+# If a line in a code chunk begins with #, the line will appear green and is treated as a comment, not R code to be run.
+```
+
+Once you have a code chunk, you can run the code inside it using:
+
+-   **Mac**: Highlight the code (or place your cursor in the line) and press `Command` + `Return`
+-   **Windows**: Highlight the code (or place your cursor in the line) and press `Ctrl` + `Enter`
+-   Or click the **little green arrow** ▶️ at the top-right of a code chunk.
+
+In Quarto documents, you put your R code inside code chunks like this:
+
+```{r}
+1 + 1
+```
+
+When you run this chunk, R will add **1 and 1** together and show the result.
+
+## Rendering your Quarto document
+
+Once you’ve written your text and code in a Quarto (`.qmd`) file, you need to **render** it so it produces the final output (for example, an HTML file you can view in your browser).
+
+In RStudio, there are two main ways to render:
+
+1.  **Click the Render button** at the top of the RStudio editor
+    -   It’s a blue button with “Render” written on it.
+2.  **Use a keyboard shortcut**:
+    -   **Mac**: `Command` + `Shift` + `K`
+    -   **Windows**: `Ctrl` + `Shift` + `K`
+
+When you render: - Quarto runs all your R code chunks in order. - It produces a document (usually `.html`) with your text and the results of your code. - You’ll see the rendered document appear in the Viewer pane or your web browser.
+
+💡 **Tip:** If you make changes to your code or text, you need to render again to see them reflected in the output.
+
+------------------------------------------------------------------------
+
+# Part 1: Base R
+
+## Variables
+
+Think of a variable as a **named box** where you store information.\
+We use `<-` to put something into a variable:
+
+```{r}
+my_number <- 42
+my_text <- "Hello, R!"
+```
+
+-   `my_number` now stores the number 42.\
+-   `my_text` now stores the text `"Hello, R!"`.
+
+To see what’s inside:
+
+```{r}
+my_number
+```
+
+------------------------------------------------------------------------
+
+## Types of variables
+
+R works with different **data types**:
+
+| Type      | Example                    | Description                    |
+|-----------|----------------------------|--------------------------------|
+| Numeric   | `3.14`                     | Numbers you can calculate with |
+| Integer   | `42L`                      | Whole numbers                  |
+| Character | `"Hello"`                  | Text                           |
+| Logical/Boolean   | `TRUE`, `FALSE`            | True/false values              |
+| Factor    | `factor(c("Red", "Blue"))` | Categories                     |
+
+------------------------------------------------------------------------
+
+### Exercise 1
+
+1.  Create a variable called `age` with your age.\
+2.  Create a variable called `name` with your first name.\
+3.  Print them both.
+
+```{r}
+age <- 18
+name <- 'Kierin'
+name
+age
+```
+
+------------------------------------------------------------------------
+
+## Reading in a CSV file
+
+Most of the data we will deal with in this unit comes in a `.csv` file (Comma-Separated Values).\
+To read it into R, use:
+
+```{r}
+# We've commented out this line now, so that the Quarto document renders into an html document without errors.
+
+#my_data <- read.csv("myfile.csv")
+```
+
+-   `"myfile.csv"` is the name of the file you want to read.\
+-   `my_data` will be a **data frame** (think: a table of data or something like an Excel spreadsheet or Google sheet).
+
+**Common problems and how to fix them:**
+
+1.  **File not found error** – This means R can’t see your file.
+    -   Make sure the file is in your **working directory** (which is where **R** is currently looking for files) Use `getwd()` to check, `setwd()` to change.
+    -   Often it is easiest to use the full file path like `"C:/Users/YourName/Documents/myfile.csv"` on Windows or `"/Users/YourName/Documents/myfile.csv"` on Mac.
+2.  **Wrong slashes on Windows** – Use forward slashes `/` not backslashes `\` in paths.
+3.  **File in Downloads folder** – Move it to a simpler folder like `Documents`.
+
+To look at the first few rows of the data, use the `head()` function:
+
+```{r}
+# We've commented out this line now, so that the Quarto document renders into an html document without errors.
+
+#head(my_data)
+```
+
+The `str()` function gives you basic information about a data frame, like how many rows and variables it has, and the data types of these variables:
+
+```{r}
+# We've commented out this line now, so that the Quarto document renders into an html document without errors.
+
+#str(my_data)
+```
+
+For now, we’ll use a built-in dataset: `mtcars`.
+
+```{r}
+head(mtcars)
+```
+
+```{r}
+str(mtcars)
+```
+
+------------------------------------------------------------------------
+
+## Selecting columns
+
+To select a column:
+
+```{r}
+mtcars$mpg
+```
+
+This gives the **mpg** (miles per gallon) column.
+
+Another way:
+
+```{r}
+mtcars[ , "mpg"]
+```
+
+**General syntax:**
+
+```         
+dataframe[rows, columns]
+```
+
+Leaving `rows` blank means “all rows”.
+
+### Selecting multiple columns
+
+In **base R**, you can select **more than one column** by putting a ***vector*** of column names or numbers inside the column part of the square brackets.
+
+#### 1. By column names (recommended)
+
+```{r}
+mtcars[ , c("mpg", "hp")]
+```
+
+-   `mtcars` → the data frame\
+-   `[ , ... ]` → square brackets for subsetting\
+-   `c("mpg", "hp")` → the `c()` function combines the column names into a vector.\
+-   Leaving the **row part** before the comma blank means “all rows”.
+
+#### 2. By column numbers
+
+```{r}
+mtcars[ , c(1, 4)]
+```
+
+-   This selects **column 1** (`mpg`) and **column 4** (`hp`).\
+-   Using numbers is less safe than names, because column order can change.
+
+### Keeping the result as a data frame
+
+If you select just **one column**, R might return it as a vector instead of a data frame.\
+To force R to keep the result as a data frame, add `drop = FALSE`:
+
+```{r}
+mtcars[ , c("mpg", "hp"), drop = FALSE]
+```
+
+### Exercise — Selecting multiple columns in Base R
+
+Using the `mtcars` dataset:
+
+1.  Select the `wt` and `qsec` columns by **name**.
+2.  Select the same columns by their **column numbers**.
+3.  Try selecting three columns of your choice.
+4.  Use `drop = FALSE` to make sure your result stays as a data frame.
+5.  Save your resulting selection as a new data frame called mtcars_columns
+
+```{r}
+mtcars_columns <- mtcars[, c(6,7), drop = FALSE]
+mtcars_columns
+```
+
+------------------------------------------------------------------------
+
+## Selecting rows
+
+To select a row:
+
+```{r}
+mtcars[1, ]
+```
+
+-   `1` means “the first row”.
+-   Leaving the column part blank means “all columns”.
+
+To select the first **five** rows:
+
+```{r}
+mtcars[1:5, ]
+```
+
+-   `1:5` means “numbers from 1 to 5”.
+
+------------------------------------------------------------------------
+
+### Exercise 2
+
+Using `mtcars`:
+
+1.  Show the `hp` column.\
+2.  Show the first 10 rows.\
+3.  Show only the `mpg` and `hp` columns for the first 5 rows.
+
+```{r}
+mtcars[1:5,c('hp','mpg'), drop = FALSE]
+
+```
+
+## Filtering rows
+
+In Base R, you can use **logical operators**:
+
+| Operator | Meaning                                  |
+|----------|------------------------------------------|
+| `&`      | AND — both conditions must be TRUE       |
+| `|`      | OR — at least one condition must be TRUE |
+| `!`      | NOT — reverses TRUE/FALSE                |
+
+Example: Only return rows for cars with **mpg \> 20** **and** **hp \< 100**:
+
+```{r}
+mtcars[mtcars$mpg > 20 & mtcars$hp < 100, ]
+```
+
+Example: Only return rows with cars with **mpg \> 30** **or** **hp \> 200**:
+
+```{r}
+mtcars[mtcars$mpg > 30 | mtcars$hp > 200, ]
+```
+
+Exampl: Only return rows with cars **not** having `mpg > 30`:
+
+```{r}
+mtcars[!(mtcars$mpg > 30), ]
+```
+
+### Exercise 3
+
+1.  Select all rows where `mpg > 25` **and** `hp < 100`.
+2.  Select all rows where `mpg > 25` **or** `hp < 100`.
+3.  Select all rows where `gear` is not equal to 4.
+
+```{r}
+mtcars[mtcars$gear != 4, ]
+```
+
+------------------------------------------------------------------------
+
+## Basic plots
+
+### Scatter plot
+
+```{r}
+plot(mtcars$mpg, mtcars$hp,
+     xlab = "Miles per Gallon",
+     ylab = "Horsepower",
+     main = "MPG vs Horsepower")
+```
+
+### Histogram
+
+```{r}
+hist(mtcars$mpg,
+     main = "Distribution of MPG",
+     xlab = "Miles per Gallon")
+```
+
+------------------------------------------------------------------------
+
+### Exercise 4
+
+Using `mtcars`:
+
+1.  Make a scatter plot of `wt` vs `mpg`.\
+2.  Make a histogram of `hp`.
+
+```{r}
+plot(mtcars$wt, mtcars$mpg,
+     xlab = 'WT',
+     ylab = 'MPG',
+     min = 'WT vs MPG'
+     )
+
+```
+
+------------------------------------------------------------------------
+
+# Part 2: The tidyverse
+
+## What is the tidyverse?
+
+R has **libraries** (also called packages) – collections of extra code that you can use to make R more powerful.
+
+The **tidyverse** is a collection of libraries designed to make data analysis easier and more consistent.\
+It includes:
+
+-   **dplyr** – easy ways to select, filter, and arrange data
+-   **ggplot2** – a modern, powerful plotting system
+-   **readr** – faster and friendlier CSV reading
+
+The tidyverse is popular because it’s **readable**, **consistent**, and **great for data analysis**. We'll use tidyverse often in this unit.
+
+To install a package, you can use the function ``` install.packages(``name_of_the_package``) ``` in a code chunk. For example, the following code installs the tidyverse package (we've commented it out for now). You only need to install packages once. You can also install packages by clicking on the **Install** button in the bottom right window and searching for your package.
+
+```{r}
+#install.packages("tidyverse")
+```
+
+To use in your R session:
+
+```{r}
+library(tidyverse)
+```
+
+**Note:** Whenever you want to use a package of code in an R session, you need to load the package with the function `library(name_of_the_package)`
+
+------------------------------------------------------------------------
+
+## Reading data
+
+```{r}
+#my_data <- read_csv("myfile.csv")
+```
+
+`read_csv()` works like `read.csv()` but is faster and prints data more nicely.
+
+Example with built-in data:
+
+```{r}
+mtcars_tibble <- as_tibble(mtcars)
+mtcars_tibble
+```
+
+A **tibble** is a modern data frame with a cleaner print style.
+
+------------------------------------------------------------------------
+
+## What is a function?
+
+A function is like a **machine**: you give it inputs, it does something, and gives you an output.\
+Example:
+
+```{r}
+sum(1, 2, 3)
+```
+
+Here: - `sum` is the function name. - `(1, 2, 3)` are the inputs.
+
+------------------------------------------------------------------------
+
+## The pipe `%>%`
+
+The pipe operator `%>%` passes the result of one function to the next.\
+It’s like saying: “Take this, then do that”. It's very helpful to use pipes when you are doing multiple things to a dataset. Pipes make each step easy to read and debug.
+
+Example:
+
+```{r}
+mtcars_tibble %>%
+  select(mpg, hp)
+```
+
+This means: “Start with `mtcars_tibble`, then select the `mpg` and `hp` columns”.
+
+**Note:** You cannot start a line of code with a pipe `%>%`, this gives an error.
+
+------------------------------------------------------------------------
+
+## Selecting multiple columns
+
+In the **tidyverse**, you can select multiple columns by passing more than one column name to `select()`.
+
+```{r}
+mtcars_tibble %>% select(mpg, hp)
+```
+
+-   This keeps just the `mpg` and `hp` columns.
+
+### Selecting a range of columns
+
+```{r}
+mtcars_tibble %>% select(mpg:hp)
+```
+
+### Saving selected columns into a new tibble or data frame
+
+Sometimes you don’t just want to select columns to look at them — you also want to **save** the result into a new object for later use.
+
+You can do this with the assignment arrow `<-` just like when creating variables.
+
+Example:
+
+```{r}
+# Take the mtcars_tibble
+# Select only mpg and hp columns
+# Save the result into a new tibble called cars_selected
+
+cars_selected <- mtcars_tibble %>%
+  select(mpg, hp)
+```
+
+Here’s what’s happening line-by-line:
+
+1.  `cars_selected <-` → Create a new tibble called `cars_selected` and store the result here.
+2.  `mtcars_tibble` → The starting dataset.
+3.  `%>%` → The **pipe**, which passes the result of one step to the next step.
+4.  `select(mpg, hp)` → Keep only the `mpg` and `hp` columns.
+
+Now, if we check `cars_selected`:
+
+```{r}
+cars_selected
+```
+
+It will show a tibble with just those two columns.
+
+### Why is this useful?
+
+-   Keeps your original dataset unchanged.
+-   Creates a smaller dataset with just the variables you need for a particular analysis.
+-   Makes code easier to read and maintain.
+
+------------------------------------------------------------------------
+
+### Exercise 5
+
+1.  From `mtcars_tibble`, select the `wt`, `qsec`, and `gear` columns.
+2.  Save the result into a new tibble called `cars_subset`.
+3.  Print `cars_subset` to check your result.
+
+```{r}
+cars_subset <- mtcars_tibble %>%
+  select(wt,qsec,gear)
+print(cars_subset)
+```
+
+## Selecting rows
+
+```{r}
+mtcars_tibble %>% slice(1:5)
+```
+
+-   `slice()` chooses rows by position.
+
+## Filtering rows
+
+```{r}
+mtcars_tibble %>% filter(mpg > 20)
+```
+
+-   `filter()` chooses rows based on a condition.
+
+------------------------------------------------------------------------
+
+### Exercise 6
+
+Using `mtcars_tibble`:
+
+1.  Select only `mpg` and `hp`.\
+2.  Show only rows with `mpg > 25` or `hp > 200`.\
+3.  Show first 5 rows of the result.
+4.  Save the last selection in a variable named `first_five`
+
+```{r}
+
+first_five <- mtcars_tibble %>%
+  select(mpg, hp) %>% 
+  filter(mpg > 25 | hp > 200) %>% 
+  slice(1:5)
+  
+
+print(first_five)
+```
+
+------------------------------------------------------------------------
+
+## Making plots with ggplot2
+
+Making a plot with **ggplot2** follows a pattern:
+
+``` r
+ggplot(data, aes(x = something, y = something_else)) +
+  geom_point()
+```
+
+-   `ggplot()` starts the plot and sets the data.\
+-   `aes()` tells ggplot which variables go on the x and y axes.\
+-   `geom_point()` adds the points.
+
+Example:
+
+```{r}
+mtcars_tibble %>%
+  ggplot(aes(x = mpg, y = hp)) +
+  geom_point() +
+  labs(title = "MPG vs Horsepower",
+       x = "Miles per Gallon",
+       y = "Horsepower")
+```
+
+Histogram example:
+
+```{r}
+mtcars_tibble %>%
+  ggplot(aes(x = mpg)) +
+  geom_histogram(binwidth = 2, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of MPG",
+       x = "Miles per Gallon")
+```
+
+------------------------------------------------------------------------
+
+### Exercise 5
+
+Using `mtcars_tibble`:
+
+1.  Make a scatter plot of `wt` vs `mpg`.\
+2.  Make a histogram of `hp`.
+
+```{r}
+mtcars_tibble %>%
+  ggplot(aes(x = wt, y = mpg)) +
+  geom_point() +
+  labs(title = "WT vs MPG",
+       x = "WT",
+       y = "MPG")
+
+mtcars_tibble %>%
+  ggplot(aes(x = hp)) +
+  geom_histogram(binwidth = 15, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of HP",
+       x = "HP")
+
+```

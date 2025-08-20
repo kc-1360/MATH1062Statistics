@@ -1,0 +1,149 @@
+---
+title: "Week 3 - Lecture 1 - Probability"
+format: html
+editor: visual
+author: 'Kierin Chung with scaffold and instructions from Yeeka Yau.'
+---
+
+## Chance simulation and Introduction to the Box model
+
+```{r}
+# This code suppresses some annoying warning messages
+#| message: false
+#| warning: false
+#| 
+library(tidyverse)
+```
+
+## Example: Two fair dice are thrown 🎲 🎲. What is the chance that their sum is 6?
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Create a "box" for the die
+die <- c(1,2,3,4,5,6)
+
+number_of_rolls = 1000
+
+# Sample with replacement twice from the box to simulate rolling two fair die. Add up the numbers and repeat 1000 times
+sums <- replicate(number_of_rolls,sum(sample(die,2,replace=TRUE)))
+
+# Convert to data frame for ggplot
+df <- data.frame(sample_sums = sums)
+
+# Barplot of sample sums
+ggplot(df, aes(x=sample_sums)) +
+  geom_bar(fill = "skyblue", color = "white") +
+  scale_x_continuous(breaks = 2:12) +
+  labs(title="Sum of two dice rolls")
+  theme_minimal()
+```
+
+### How many of the sums are equal to 6?
+
+```{r}
+table(sums)
+```
+
+### What is the probability that the sum will be greater than 9?
+
+Based on the table, we have 96+49+24 sums greater than 9, so the probability is (96+49+24)/1000 $\approx$ 17% of the sum being greater than 9.
+
+## Example: Basketball draft 🏀
+
+```{r}
+# Set seed for reproducibility
+set.seed(3)
+
+# Create a "box" for the player pool
+basketball_box <- c(rep(1,8), rep(0,12))
+
+number_of_drafts = 1000
+
+# Sample WITHOUT replacement 5 times from the box to simulate a random selection of 5 players. Add up the numbers and repeat 1000 times
+basketball_sums <- replicate(number_of_rolls,sum(sample(basketball_box,5,replace=FALSE)))
+
+# Convert to data frame for ggplot
+basketball_df <- data.frame(basketball_sum = basketball_sums)
+
+# Barplot of sample sums
+ggplot(basketball_df, aes(x=basketball_sum)) +
+  geom_bar(fill = "purple", color = "white") +
+  labs(title="Random draft of 5 players", x= "Number of star players")
+  theme_minimal()
+```
+
+### What is the probability that exactly 2 star players are selected?
+
+```{r}
+table(basketball_sums)
+```
+
+Approximately 412/1000 = 0.412
+
+### What is the probability that at least 1 star player is selected?
+
+Approximately 1 - 50/1000 = 0.95
+
+## Chevalier: Game A
+
+```{r}
+# Set seed for reproducibility
+set.seed(4)
+
+# Create a "box" for game A
+game_A_box <- c(1,0,0,0,0,0)
+
+number_of_games = 10000
+
+# Sample WITHOUT replacement 5 times from the box to simulate a random selection of 5 players. Add up the numbers and repeat 10000 times
+game_A_sums <- replicate(number_of_games,sum(sample(game_A_box,4,replace=TRUE)))
+
+# Convert to data frame for ggplot
+chevalier_df <- data.frame(game_A_sum = game_A_sums)
+
+# Barplot of sample sums
+ggplot(chevalier_df, aes(x=game_A_sum)) +
+  geom_bar(fill = "orange", color = "white") +
+  labs(title="Simulation of game A", x= "Number of aces")
+  theme_minimal()
+```
+
+### Probability of getting at least 1 ace:
+
+```{r}
+table(game_A_sums)
+```
+
+Chance of winning: (3889+1146+159+10)/10000 $\approx$ 0.52
+
+## Homework: Simulate Chevalier: Game B
+
+```{r}
+# Set seed for reproducibility
+set.seed(62)
+
+# Create a "box" for game A
+game_B_box <- c(rep(0, 35), 1)
+
+number_of_games = 10000
+
+# Sample WITHOUT replacement 5 times from the box to simulate a random selection of 5 players. Add up the numbers and repeat 10000 times
+
+game_B_sums <- replicate(number_of_games, sum(sample(game_B_box, 24, replace=TRUE)))
+
+# Convert to data frame for ggplot
+chevalier_df <- data.frame(game_B_sum = game_B_sums)
+
+# Barplot of sample sums
+ggplot(chevalier_df, aes(x=game_B_sum)) +
+  geom_bar(fill = "orange", color = "white") +
+  labs(title="Simulation of game B", x= "Number of aces")
+  theme_minimal()
+  
+print(table(game_B_sums))
+```
+
+The probabiltiy he wins is ((10000-5117-3466)/10000) = 14.17%. This is because with the 36 different possibilities, it becomes harder to get 2 aces, therefore making it much more difficult to win. 
+```
