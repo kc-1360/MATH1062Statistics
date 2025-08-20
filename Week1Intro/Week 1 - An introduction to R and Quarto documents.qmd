@@ -1,6 +1,6 @@
 ---
 title: "MATH1062 Statistics: Week 1 - Getting Started with R"
-author: "School of Mathematics and Statistics, University of Sydney"
+author: "Kierin Chung with template and instructions from School of Mathematics and Statistics, University of Sydney"
 format:
   html:
     embed-resources: true
